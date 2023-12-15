@@ -8,13 +8,22 @@ job "[[.DOMAIN]]" {
     value     = "linux"
   }
 
+
   group "[[.SERVICE_ID]]" {
     count = 1
+
+    network {
+      port "http" { to = 3000 }
+    }
 
     service {
       name     = "grafana"
       provider = "nomad"
       port     = "http"
+      tags = [
+        "traefik.enable=true",
+        "traefik.http.routers.[[.SERVICE_ID]].rule=Host(`[[.DOMAIN]]`)"
+      ]
     }
 
     task "grafana" {
