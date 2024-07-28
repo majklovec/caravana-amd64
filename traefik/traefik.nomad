@@ -35,8 +35,8 @@ job "[[.DOMAIN]]" {
         "traefik.http.routers.dashboard.rule=Host(`[[.DOMAIN]]`)",
         "traefik.http.routers.dashboard.service=api@internal",
         "traefik.http.routers.dashboard.entrypoints=websecure",
-        "traefik.http.routers.dashboard.middlewares=basic-auth",
-        "traefik.http.middlewares.basic-auth.basicauth.users=[[.TRAEFIK_DASHBOARD_USER]]:[[.TRAEFIK_DASHBOARD_PASSWORD]]",
+#        "traefik.http.routers.dashboard.middlewares=basic-auth",
+#        "traefik.http.middlewares.basic-auth.basicauth.users=[[.TRAEFIK_DASHBOARD_USER]]:[[.TRAEFIK_DASHBOARD_PASSWORD]]",
       ]
 
       port = "https"
@@ -74,8 +74,6 @@ job "[[.DOMAIN]]" {
                   - "300-302"
                 retryAttempts: true
                 minDuration: "10ms"
-            experimental:
-              http3: true
             entryPoints:
               web:
                 address: ':80'
@@ -85,6 +83,7 @@ job "[[.DOMAIN]]" {
                       to: websecure
               websecure:
                 address: ':443'
+                http3: {}
                 http:
                   tls:
                     certResolver: le
@@ -128,6 +127,13 @@ EOF
       template {
         data        = <<EOF
 http:
+  middlewares:
+    redirect-to-www:
+      redirectregex: 
+        regex: '(https|http)://(?:www.)?(.*)'
+        replacement: 'https://www.${2}'
+        permanent: true
+
   routers:
     nomad:
       rule: Host(`[[.NOMAD_DASHBOARD]]`)
