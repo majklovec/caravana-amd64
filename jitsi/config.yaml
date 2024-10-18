@@ -1,0 +1,7 @@
+DOMAIN: jitsi.vondracek.dev
+TAG: stable-9753
+JICOFO_AUTH_PASSWORD:     "replaceme_jicofo"
+JVB_AUTH_PASSWORD:        "replaceme_jvb"
+JIGASI_XMPP_PASSWORD:     "replaceme_jigasi"
+JIBRI_RECORDER_PASSWORD:  "replaceme_recorder"
+JIBRI_XMPP_PASSWORD:     "replaceme_jibri"

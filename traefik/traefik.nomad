@@ -61,7 +61,12 @@ job "[[.DOMAIN]]" {
           source   = "/data/traefik-acme"
           readonly = false
         }
-
+        mount {
+          type     = "bind"
+          target   = "/var/run/docker.sock"
+          source   = "/var/run/docker.sock"
+          readonly = false
+        }
       }
 
       template {
@@ -112,6 +117,9 @@ job "[[.DOMAIN]]" {
             providers:
               file:
                 filename: /local/traefik-routes.yaml
+              docker:
+                endpoint: "unix:///var/run/docker.sock"
+                exposedByDefault: false
               nomad:
                 # constraints: "Tag(`a.tag.name`)"
 #                defaultRule: PathPrefix(`/{{"{{"}} normalize .Name | lower {{"}}"}}`)
