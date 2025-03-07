@@ -13,7 +13,7 @@ job "[[.DOMAIN]]" {
     count = 1
 
     network {
-      port "http" { to = 3000 }
+      port "http" { static = 3000 }
     }
 
     service {
@@ -32,6 +32,12 @@ job "[[.DOMAIN]]" {
       config {
         image = "grafana/grafana:[[ .VERSION ]]"
         ports = ["http"]
+        mount {
+          type     = "bind"
+          target   = "/var/lib/grafana"
+          source   = "/data/[[.SERVICE_ID]]"
+          readonly = false
+        }
       }
 
       env {
