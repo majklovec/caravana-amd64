@@ -5,9 +5,9 @@ job "[[.DOMAIN]]" {
     count = 1
 
     network {
-      port "web" { to = 8069 }
+      port "web" { static = 8069 }
       port "livechat" { to = 8072 }
-      port "db" { to = 5432 }
+      port "db" { static = 5432 }
     }
 
     task "[[.SERVICE_ID]]" {
@@ -17,8 +17,8 @@ job "[[.DOMAIN]]" {
         ports = ["web", "livechat"]
         volumes = [
           "local/odoo.conf:/etc/odoo/odoo.conf",
-#          "/etc/timezone:/etc/timezone:ro",
-#          "/etc/localtime:/etc/localtime:ro"
+          #          "/etc/timezone:/etc/timezone:ro",
+          #          "/etc/localtime:/etc/localtime:ro"
         ]
         mount {
           type     = "bind"
@@ -153,6 +153,17 @@ EOH
         provider = "nomad"
         name     = "[[.SERVICE_ID]]-db"
         port     = "db"
+        tags = [
+          "backup-enabled",
+          "backup-type=postgres",
+          "backup-schedule=@hourly",
+          "backup-retention=14",
+          "backup-s3-bucket=prod-backups",
+          "backup-s3-path=/databases/postgres",
+          "db-user=[[.DB_PASSWORD]]",
+          "db-password=[[.DB_USER]]",
+          "db-path=bpsbilov"
+        ]
       }
     }
   }
