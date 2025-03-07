@@ -60,7 +60,7 @@ job "[[.DOMAIN]]" {
           "backup-retention=7",
           "db-user=[[.FIREBIRD_USER]]",
           "db-password=[[.FIREBIRD_PASSWORD]]",
-          "db-path=[[.FIREBIRD_DATABASE]]"
+          "db-name=[[.FIREBIRD_DATABASE]]"
         ]
       }
     }

@@ -157,12 +157,9 @@ EOH
           "backup-enabled",
           "backup-type=postgres",
           "backup-schedule=@hourly",
-          "backup-retention=14",
-          "backup-s3-bucket=prod-backups",
-          "backup-s3-path=/databases/postgres",
           "db-user=[[.DB_PASSWORD]]",
           "db-password=[[.DB_USER]]",
-          "db-path=bpsbilov"
+          "db-name=bpsbilov"
         ]
       }
     }

@@ -23,7 +23,7 @@ nomad service list -json | jq -c '.[].Services[] | select(.Tags[]? | contains("b
   SOURCE_PATH=$(echo "$TAGS" | awk -F= '/^backup-source-path=/ {print $2}')
   DB_USER=$(echo "$TAGS" | awk -F= '/^db-user=/ {print $2}')
   DB_PASSWORD=$(echo "$TAGS" | awk -F= '/^db-password=/ {print $2}')
-  DB_PATH=$(echo "$TAGS" | awk -F= '/^db-path=/ {print $2}')
+  DB_NAME=$(echo "$TAGS" | awk -F= '/^db-name=/ {print $2}')
   
   # Get service info and parse IP/Port
   SERVICE_INFO=$(nomad service info -json "$SERVICE_NAME")
@@ -48,7 +48,7 @@ job "${SERVICE_NAME}-backup" {
       config {
         image = "nomad-backup-${BACKUP_TYPE}:local"
         command = "backup.sh"
-        args = ["${SERVICE_NAME}", "${NOMAD_UPSTREAM_IP}", "${NOMAD_UPSTREAM_PORT}", "${DB_USER}", "${DB_PASSWORD}", "${DB_PATH}", "${RETENTION}"]                
+        args = ["${SERVICE_NAME}", "${NOMAD_UPSTREAM_IP}", "${NOMAD_UPSTREAM_PORT}", "${DB_USER}", "${DB_PASSWORD}", "${DB_NAME}"]                
       }
 
       template {
