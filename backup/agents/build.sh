@@ -1,4 +1,4 @@
-for item in base mysql postgres firebird ; do
+for item in base file mysql postgres firebird ; do
   cd ./$item
   ./build.sh
   cd ..

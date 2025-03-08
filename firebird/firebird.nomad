@@ -55,12 +55,12 @@ job "[[.DOMAIN]]" {
 
         tags = [
           "backup-enabled",
-          "backup-type=firebird",
+          "backup-type=file",
           "backup-schedule=@hourly",
           "backup-retention=7",
           "db-user=[[.FIREBIRD_USER]]",
           "db-password=[[.FIREBIRD_PASSWORD]]",
-          "db-name=[[.FIREBIRD_DATABASE]]"
+          "db-name=/data/[[.SERVICE_ID]]/[[.FIREBIRD_DATABASE]]"
         ]
       }
     }

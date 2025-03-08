@@ -1,6 +1,11 @@
 job "[[.DOMAIN]]" {
   datacenters = [[ .DATACENTERS  | toJson ]]
-  type        = "sysbatch"
+  type        = "batch"
+
+  periodic {
+    cron             = "@hourly"
+    prohibit_overlap = true
+  }
 
   group "[[.SERVICE_ID]]" {
     task "backup-script" {
@@ -31,15 +36,10 @@ nomad service list -json | jq -c '.[].Services[] | select(.Tags[]? | contains("b
   NOMAD_UPSTREAM_PORT=$(echo "$SERVICE_INFO" | jq -r '.[0].Port')  
 
   # Generate Nomad job HCL with embedded values
-  cat > "local/${SERVICE_NAME}-backup.hcl" <<JOB
-job "${SERVICE_NAME}-backup" {
+  cat > "local/backup-${SERVICE_NAME}.hcl" <<JOB
+job "backup-${SERVICE_NAME}" {
   type        = "batch"
   datacenters = ["dc1"]
-
-  periodic {
-    cron             = "${SCHEDULE}"
-    prohibit_overlap = true
-  }
 
   group "backup" {
     task "runner" {
@@ -49,6 +49,12 @@ job "${SERVICE_NAME}-backup" {
         image = "nomad-backup-${BACKUP_TYPE}:local"
         command = "backup.sh"
         args = ["${SERVICE_NAME}", "${NOMAD_UPSTREAM_IP}", "${NOMAD_UPSTREAM_PORT}", "${DB_USER}", "${DB_PASSWORD}", "${DB_NAME}"]                
+        mount {
+          type     = "bind"
+          target   = "/data"
+          source   = "/data"
+          readonly = false
+        }        
       }
 
       template {
@@ -64,7 +70,28 @@ EOT
 }
 JOB
 
-  nomad job run "local/${SERVICE_NAME}-backup.hcl"
+  nomad job run "local/backup-${SERVICE_NAME}.hcl"
+
+  # Wait for the backup job to complete
+  JOB_NAME="backup-${SERVICE_NAME}"
+  echo "Waiting for job $JOB_NAME to complete..."
+  while true; do
+    STATUS=$(nomad job status -short "$JOB_NAME" | awk '/Status/ {print $3}')
+    if [ "$STATUS" == "dead" ]; then
+      echo "Job $JOB_NAME completed successfully."
+      break
+    elif [ "$STATUS" == "failed" ]; then
+      echo "Job $JOB_NAME failed. Continuing with next backup."
+      break  # Exit wait loop but continue script
+    else
+      echo "Job $JOB_NAME current status: $STATUS. Checking again in 5 seconds..."
+      sleep 5
+    fi
+  done
+
+  nomad job stop -purge $JOB_NAME
+
+  rm -f  "local/backup-${SERVICE_NAME}.hcl"
 done
 
 EOH

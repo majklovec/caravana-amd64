@@ -26,4 +26,4 @@ restic backup \
   --stdin-filename "$SERVICE_DBNAME.sql" \
   --stdin-from-command -- pg_dumpall --host="$SERVICE_HOST" --port="$SERVICE_PORT" --username="$SERVICE_USER" 
 
-restic forget --keep-within-daily 7d --keep-within-weekly 1m --keep-within-monthly 1y --keep-within-yearly 75y --prune
+restic forget --keep-within-hourly 1d --keep-within-daily 7d --keep-within-weekly 1m --keep-within-monthly 1y --keep-within-yearly 75y --prune

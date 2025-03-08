@@ -1,27 +1,37 @@
 #!/bin/bash
 set -eo pipefail
 
-HOST="$1"
-PORT="$2"
-USER="$3"
-PASSWORD="$4"
-RETENTION_DAYS="$5"
+SERVICE_NAME="$1"
+SERVICE_HOST="$2"
+SERVICE_PORT="$3"
+SERVICE_USER="$4"
+SERVICE_PASSWORD="$5"
+SERVICE_DBNAME="$6"
 
-export RESTIC_REPO="/restic-repo"
-export RESTIC_PASSWORD="${RESTIC_PASSWORD}"
+echo "SERVICE: ${SERVICE_NAME}"
+echo "HOST: ${SERVICE_HOST}"
+echo "PORT: ${SERVICE_PORT}"
+echo "USER: ${SERVICE_USER}"
+echo "PASSWORD: ${SERVICE_PASSWORD}"
+echo "DBNAME: ${SERVICE_DBNAME}"
+
+echo "RESTIC_REPOSITORY: ${RESTIC_REPOSITORY}"
 
 restic list snapshots || restic init
 
-mysqldump \
-  --host="$HOST" \
-  --port="$PORT" \
-  --user="$USER" \
-  --password="$PASSWORD" \
+restic backup \
+  --host "$SERVICE_NAME" \
+  --stdin-filename "$SERVICE_DBNAME.sql" \
+  --stdin-from-command -- \
+  mysqldump \
+  --host="$SERVICE_HOST" \
+  --port="$SERVICE_PORT" \
+  --user="$SERVICE_USER" \
+  --password="$SERVICE_PASSWORD" \
   --all-databases \
   --single-transaction \
   --triggers \
   --routines \
-  --events \
-  | restic backup --stdin --stdin-filename "mysql-all-$(date +%Y%m%d).sql"
-
-restic forget --keep-daily "$RETENTION_DAYS" --prune
+  --events
+  
+restic forget --keep-within-hourly 1d --keep-within-daily 7d --keep-within-weekly 1m --keep-within-monthly 1y --keep-within-yearly 75y --prune

@@ -100,7 +100,12 @@ EOH
         tags = [
           "traefik.enable=true",
           "traefik.http.routers.[[.SERVICE_ID]].rule=Host(`[[.DOMAIN]]`) ||  Host(`www.[[.DOMAIN]]`)",
-          "traefik.http.routers.[[.SERVICE_ID]].middlewares=redirect-to-www@file"
+
+          "traefik.http.routers.[[.SERVICE_ID]].middlewares=redirect-to-www@file",
+          "backup-enabled",
+          "backup-type=file",
+          "backup-schedule=@hourly",
+          "db-name=/data/[[.SERVICE_ID]]/web /data/[[.SERVICE_ID]]/extra-addons"
         ]
 
         check {
