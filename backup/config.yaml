@@ -1,2 +1,2 @@
-RESTIC_REPOSITORY: rest:http://backup:backup@144.91.80.168:8010/bps
-RESTIC_PASSWORD: backup
+RESTIC_REPOSITORY: rest:http://pass:pass@ipadd:port/repo
+RESTIC_PASSWORD: pass
