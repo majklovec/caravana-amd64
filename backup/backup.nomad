@@ -57,6 +57,11 @@ job "backup-${SERVICE_NAME}" {
         }        
       }
 
+      resources {
+        cpu    = 1000
+        memory = 1024
+      }      
+
       template {
         data = <<EOT
 RESTIC_REPOSITORY="[[.RESTIC_REPOSITORY]]"

@@ -22,6 +22,8 @@ restic list snapshots || restic init
 
 export PGPASSWORD="$SERVICE_PASSWORD" 
 restic backup \
+  --tag "db" \
+  --tag "postgres" \
   --host "$SERVICE_NAME" \
   --stdin-filename "$SERVICE_DBNAME.sql" \
   --stdin-from-command -- pg_dumpall --host="$SERVICE_HOST" --port="$SERVICE_PORT" --username="$SERVICE_USER" 

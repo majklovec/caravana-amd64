@@ -20,6 +20,8 @@ echo "RESTIC_REPOSITORY: ${RESTIC_REPOSITORY}"
 restic list snapshots || restic init
 
 restic backup \
+  --tag "db" \
+  --tag "mysql" \
   --host "$SERVICE_NAME" \
   --stdin-filename "$SERVICE_DBNAME.sql" \
   --stdin-from-command -- \
