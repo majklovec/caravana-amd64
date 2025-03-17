@@ -14,13 +14,9 @@ job "[[.DOMAIN]]" {
         static = 80
       }
 
-      port "https" {
-        static = 443
+      port "api" {
+        static = 8080
       }
-
-      #      port "api" {
-      #        static = 8080
-      #      }
 
       #      port "metrics" {
       #        static = 9082
@@ -30,16 +26,16 @@ job "[[.DOMAIN]]" {
     service {
       provider = "nomad"
       name     = "traefik-dashboard"
-      tags = [
-        "traefik.enable=true",
-        "traefik.http.routers.dashboard.rule=Host(`[[.DOMAIN]]`)",
-        "traefik.http.routers.dashboard.service=api@internal",
-        "traefik.http.routers.dashboard.entrypoints=websecure",
-#        "traefik.http.routers.dashboard.middlewares=basic-auth",
-#        "traefik.http.middlewares.basic-auth.basicauth.users=[[.TRAEFIK_DASHBOARD_USER]]:[[.TRAEFIK_DASHBOARD_PASSWORD]]",
-      ]
+      # tags = [
+      #   "traefik.enable=true",
+      #   "traefik.http.routers.dashboard.rule=Path(`[[.DOMAIN]]`)",
+      #   "traefik.http.routers.dashboard.service=api@internal",
+      #   "traefik.http.routers.dashboard.entrypoints=api",
+      #        "traefik.http.routers.dashboard.middlewares=basic-auth",
+      #        "traefik.http.middlewares.basic-auth.basicauth.users=[[.TRAEFIK_DASHBOARD_USER]]:[[.TRAEFIK_DASHBOARD_PASSWORD]]",
+      # ]
 
-      port = "https"
+      port = "http"
 
       check {
         type     = "tcp"
@@ -53,14 +49,9 @@ job "[[.DOMAIN]]" {
 
       config {
         image = "traefik"
-        ports = ["http", "https"]
+        ports = ["http"]
         args  = ["--configFile=local/traefik.yaml"]
-        mount {
-          type     = "bind"
-          target   = "/acme"
-          source   = "/data/traefik-acme"
-          readonly = false
-        }
+
         mount {
           type     = "bind"
           target   = "/var/run/docker.sock"
@@ -82,27 +73,6 @@ job "[[.DOMAIN]]" {
             entryPoints:
               web:
                 address: ':80'
-                http:
-                  redirections:
-                    entryPoint: 
-                      to: websecure
-              websecure:
-                address: ':443'
-                http3: {}
-                http:
-                  tls:
-                    certResolver: le
-              grpc:
-                address: ':7344'
-              metrics:
-                address: ':9082'
-            certificatesResolvers:
-              le:
-                acme:
-                  email: [[.EMAIL]]
-                  storage: /acme/acme.json
-                  httpChallenge:
-                    entryPoint: web
             api:
               dashboard: true
               insecure: true
@@ -135,13 +105,6 @@ EOF
       template {
         data        = <<EOF
 http:
-  middlewares:
-    redirect-to-www:
-      redirectregex: 
-        regex: '(https|http)://(?:www.)?(.*)'
-        replacement: 'https://www.${2}'
-        permanent: true
-
   routers:
     nomad:
       rule: Host(`[[.NOMAD_DASHBOARD]]`)

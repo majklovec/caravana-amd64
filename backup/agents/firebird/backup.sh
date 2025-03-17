@@ -27,4 +27,4 @@ gbak -backup -v -g -y /dev/null -service ${SERVICE_HOST}:${SERVICE_PORT} $SERVIC
   --stdin-filename "firebird" \
   --stdin
 
-restic forget --keep-within-hourly 1d --keep-within-daily 7d --keep-within-weekly 1m --keep-within-monthly 1y --keep-within-yearly 75y --prune
+#restic forget --keep-within-hourly 1d --keep-within-daily 7d --keep-within-weekly 1m --keep-within-monthly 1y --keep-within-yearly 75y --prune

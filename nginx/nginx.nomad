@@ -7,7 +7,7 @@ job "[[.DOMAIN]]" {
     count = 1
 
     network {
-      port "http" { to = 80 }
+      port "http" { static = 80 }
     }
 
     service {
@@ -41,7 +41,7 @@ job "[[.DOMAIN]]" {
         ports = ["http"]
         mount {
           type     = "bind"
-          target   = "/var/www/html"
+          target   = "/usr/share/nginx/html"
           source   = "/data/[[.SERVICE_ID]]"
           readonly = false
         }

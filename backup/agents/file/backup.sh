@@ -22,4 +22,4 @@ restic list snapshots || restic init
 
 restic backup --tag "files" --host "$SERVICE_NAME" $SERVICE_DBNAME
 
-restic forget --keep-within-hourly 1d --keep-within-daily 7d --keep-within-weekly 1m --keep-within-monthly 1y --keep-within-yearly 75y --prune
+#restic forget --keep-within-hourly 1d --keep-within-daily 7d --keep-within-weekly 1m --keep-within-monthly 1y --keep-within-yearly 75y --prune
