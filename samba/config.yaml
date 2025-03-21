@@ -1,0 +1,4 @@
+DC_NAME: "dc1"
+DOMAIN_FQDN: "ad.internal"
+DC_IP: "192.168.0.5"
+MAIN_DNS_IP: "192.168.0.4"
