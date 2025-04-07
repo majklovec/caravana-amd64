@@ -31,11 +31,9 @@ job "[[.DOMAIN]]" {
       }
 
       env {
-        POSTGRES_DB                = "[[.POSTGRES_DB]]"
-        POSTGRES_USER              = "[[.POSTGRES_USER]]"
-        POSTGRES_PASSWORD          = "[[.POSTGRES_PASSWORD]]"
-        POSTGRES_NON_ROOT_USER     = "[[.POSTGRES_NON_ROOT_USER]]"
-        POSTGRES_NON_ROOT_PASSWORD = "[[.POSTGRES_NON_ROOT_PASSWORD]]"
+        POSTGRES_DB       = "[[.POSTGRES_DB]]"
+        POSTGRES_USER     = "[[.POSTGRES_USER]]"
+        POSTGRES_PASSWORD = "[[.POSTGRES_PASSWORD]]"
       }
 
       service {
@@ -71,8 +69,8 @@ job "[[.DOMAIN]]" {
         WEBHOOK_URL            = "http://:5678/"
       }
       resources {
-        cpu    = 200
-        memory = 512
+        cpu    = 2000
+        memory = 1024
       }
       service {
         provider = "nomad"
