@@ -1,0 +1,5 @@
+version: "2"
+services:
+  odoo:
+    image: majkl/odoo:18
+    build: .

@@ -7,7 +7,7 @@ job "[[.DOMAIN]]" {
     network {
       port "web" { static = 8069 }
       port "livechat" { to = 8072 }
-      port "db" { static = 5432 }
+      port "db" { to = 5432 }
     }
 
     task "[[.SERVICE_ID]]" {
@@ -74,7 +74,8 @@ log_level = info
 logfile = None
 longpolling_port = 8072
 max_cron_threads = 1
-osv_memory_age_limit = 1.0
+;osv_memory_age_limit = 1.0
+transient_age_limit = 1.0
 osv_memory_count_limit = False
 smtp_password = False
 smtp_port = 25
@@ -88,6 +89,7 @@ xmlrpc_port = 8069
 xmlrpcs = True
 xmlrpcs_interface = 
 xmlrpcs_port = 8071
+unaccent = True
 EOH
         destination = "local/odoo.conf"
       }
@@ -136,12 +138,22 @@ EOH
           source   = "/data/[[.SERVICE_ID]]/db"
           readonly = false
         }
-
+        volumes = [
+          "local/init-extensions.sh:/docker-entrypoint-initdb.d/init-extensions.sh",
+        ]
       }
 
       lifecycle {
         hook    = "prestart"
         sidecar = true
+      }
+
+      template {
+        data        = <<EOH
+          DROP FUNCTION unaccent;
+          CREATE EXTENSION IF NOT EXISTS \"unaccent\";
+        EOH
+        destination = "local/init-extensions.sh"
       }
 
       resources {
@@ -164,7 +176,7 @@ EOH
           "backup-schedule=@hourly",
           "db-user=[[.DB_PASSWORD]]",
           "db-password=[[.DB_USER]]",
-          "db-name=bpsbilov"
+          "db-name=[[.SERVICE_ID]]"
         ]
       }
     }
